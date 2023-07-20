@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    matchLabels:
+      app: frontend-service
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: frontend-service
+    spec:
+      containers:
+        - name: octopub-frontend
+          image: octopussamples/octopub-frontend
+          ports:
+            - name: http
+              containerPort: 7080
+          env:
+            - name: UDL_SETVALUE_1
+              value: "[/usr/share/nginx/html/config.json][productEndpoint]https://internal-development.octopussamples.com/api/products"
+            - name: UDL_SETVALUE_2
+              value: "[/usr/share/nginx/html/config.json][productHealthEndpoint]https://internal-development.octopussamples.com/health/products"
+            - name: UDL_SETVALUE_3
+              value: "[/usr/share/nginx/html/config.json][auditEndpoint]https://internal-development.octopussamples.com/api/audits"
+            - name: UDL_SETVALUE_4
+              value: "[/usr/share/nginx/html/config.json][auditHealthEndpoint]https://internal-development.octopussamples.com/health/audits"
+            - name: UDL_SETVALUE_5
+              value: "[/usr/share/nginx/html/config.json][overrideTheme]pink"
