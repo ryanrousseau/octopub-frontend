@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: octopub-frontend
-          image: octopussamples/octopub-frontend
+          image: octopussamples/octopub-frontend:0.1.167
           ports:
             - name: http
               containerPort: 7080
