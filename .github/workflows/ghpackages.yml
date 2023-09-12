@@ -1,0 +1,44 @@
+name: GitHub packages workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  package:
+    name: Create and push packages ⚙️
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    outputs:
+      version: ${{ steps.version-generator.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set Version Number
+      id: version-generator
+      run: echo "version=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
+  
+    - name: Create artifacts folder
+      run: |
+        mkdir "$GITHUB_WORKSPACE/artifacts"
+        mkdir "$GITHUB_WORKSPACE/artifacts/Octopub.Frontend"
+        cp *.yml "$GITHUB_WORKSPACE/artifacts/Octopub.Frontend"
+
+    - name: Package Octopub.Frontend 🐙
+      uses: OctopusDeploy/create-nuget-package-action@v3
+      with:
+        package_id: "Octopub.Frontend"
+        version: "${{ steps.version-generator.outputs.version }}"
+        output_folder: "${{ github.workspace }}/artifacts"
+        base_path: "${{ github.workspace }}/artifacts/Octopub.Frontend"
+        files: |
+          **/*.*
+        nuspec_description: Octopub Frontend
+        nuspec_authors: |
+          Ryan Rousseau
+
+    - name: Publish Artifacts to Development
+      run: |
+        dotnet nuget push "$GITHUB_WORKSPACE/artifacts/Octopub.Frontend.${{ steps.version-generator.outputs.version }}.nupkg" --source "https://nuget.pkg.github.com/ryanrousseau/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
