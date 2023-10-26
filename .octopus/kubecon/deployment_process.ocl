@@ -174,7 +174,7 @@ step "print-url" {
                 $url = $OctopusParameters["Octopub.Tenant.Url"]
                 
                 Write-Highlight "[$url]($url)"
-                EOT
+                    EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
