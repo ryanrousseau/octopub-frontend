@@ -1,38 +1,3 @@
-step "deploy-frontend" {
-    name = "Deploy frontend"
-    properties = {
-        Octopus.Action.TargetRoles = "octopub"
-    }
-
-    action {
-        action_type = "Octopus.KubernetesDeployRawYaml"
-        is_disabled = true
-        properties = {
-            Octopus.Action.Kubernetes.DeploymentTimeout = "180"
-            Octopus.Action.Kubernetes.ResourceStatusCheck = "False"
-            Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "*.yml"
-            Octopus.Action.KubernetesContainers.DeploymentWait = "NoWait"
-            Octopus.Action.Package.JsonConfigurationVariablesTargets = "**/*.{yml,yaml}"
-            Octopus.Action.Script.ScriptSource = "GitRepository"
-            OctopusUseBundledTooling = "False"
-        }
-        worker_pool = "hosted-ubuntu"
-
-        container {
-            feed = "docker-hub"
-            image = "octopuslabs/k8s-workertools:latest"
-        }
-
-        git_dependencies {
-            default_branch = "main"
-            file_path_filters = ["*.yml"]
-            git_credential_id = "GitCredentials-122"
-            git_credential_type = "Library"
-            repository_uri = "https://github.com/ryanrousseau/octopub-frontend.git"
-        }
-    }
-}
-
 step "create-deployment" {
     name = "Create deployment"
     properties = {
@@ -45,10 +10,7 @@ step "create-deployment" {
             Octopus.Action.Kubernetes.DeploymentTimeout = "180"
             Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
             Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "deployment.yml"
-            Octopus.Action.Package.DownloadOnTentacle = "False"
-            Octopus.Action.Package.FeedId = "octopus-server-built-in"
             Octopus.Action.Package.JsonConfigurationVariablesTargets = "**/*.{yml,yaml}"
-            Octopus.Action.Package.PackageId = "Octopub.Frontend"
             Octopus.Action.Script.ScriptSource = "GitRepository"
             OctopusUseBundledTooling = "False"
         }
@@ -61,18 +23,10 @@ step "create-deployment" {
 
         git_dependencies {
             default_branch = "main"
-            git_credential_id = "GitCredentials-122"
+            file_path_filters = ["deployment.yml"]
+            git_credential_id = "GitCredentials-1301"
             git_credential_type = "Library"
             repository_uri = "https://github.com/ryanrousseau/octopub-frontend.git"
-        }
-
-        packages {
-            acquisition_location = "Server"
-            feed = "octopus-server-built-in"
-            package_id = "Octopub.Frontend"
-            properties = {
-                SelectionMode = "immediate"
-            }
         }
     }
 }
@@ -89,9 +43,6 @@ step "create-service" {
             Octopus.Action.Kubernetes.DeploymentTimeout = "180"
             Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
             Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "service.yml"
-            Octopus.Action.Package.DownloadOnTentacle = "False"
-            Octopus.Action.Package.FeedId = "octopus-server-built-in"
-            Octopus.Action.Package.PackageId = "Octopub.Frontend"
             Octopus.Action.Script.ScriptSource = "GitRepository"
             OctopusUseBundledTooling = "False"
         }
@@ -104,18 +55,10 @@ step "create-service" {
 
         git_dependencies {
             default_branch = "main"
-            git_credential_id = "GitCredentials-122"
+            file_path_filters = ["service.yml"]
+            git_credential_id = "GitCredentials-1301"
             git_credential_type = "Library"
             repository_uri = "https://github.com/ryanrousseau/octopub-frontend.git"
-        }
-
-        packages {
-            acquisition_location = "Server"
-            feed = "octopus-server-built-in"
-            package_id = "Octopub.Frontend"
-            properties = {
-                SelectionMode = "immediate"
-            }
         }
     }
 }
@@ -132,10 +75,7 @@ step "deploy-ingress" {
             Octopus.Action.Kubernetes.DeploymentTimeout = "180"
             Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
             Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "ingress.yml"
-            Octopus.Action.Package.DownloadOnTentacle = "False"
-            Octopus.Action.Package.FeedId = "octopus-server-built-in"
             Octopus.Action.Package.JsonConfigurationVariablesTargets = "**/*.{yml,yaml}"
-            Octopus.Action.Package.PackageId = "Octopub.Frontend"
             Octopus.Action.Script.ScriptSource = "GitRepository"
             OctopusUseBundledTooling = "False"
         }
@@ -148,18 +88,10 @@ step "deploy-ingress" {
 
         git_dependencies {
             default_branch = "main"
-            git_credential_id = "GitCredentials-122"
+            file_path_filters = ["ingress.yml"]
+            git_credential_id = "GitCredentials-1301"
             git_credential_type = "Library"
             repository_uri = "https://github.com/ryanrousseau/octopub-frontend.git"
-        }
-
-        packages {
-            acquisition_location = "Server"
-            feed = "octopus-server-built-in"
-            package_id = "Octopub.Frontend"
-            properties = {
-                SelectionMode = "immediate"
-            }
         }
     }
 }
@@ -174,7 +106,7 @@ step "print-url" {
                 $url = $OctopusParameters["Octopub.Tenant.Url"]
                 
                 Write-Highlight "[$url]($url)"
-                    EOT
+                EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
