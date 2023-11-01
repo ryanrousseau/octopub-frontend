@@ -1,3 +1,34 @@
+step "deploy-frontend" {
+    name = "Deploy frontend"
+    properties = {
+        Octopus.Action.TargetRoles = "octopub"
+    }
+
+    action {
+        action_type = "Octopus.KubernetesDeployRawYaml"
+        properties = {
+            Octopus.Action.Kubernetes.DeploymentTimeout = "180"
+            Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
+            Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "*.yaml"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "github-packages"
+            Octopus.Action.Package.JsonConfigurationVariablesTargets = "**/*.{yml,yaml}"
+            Octopus.Action.Package.PackageId = "Octopub.Frontend"
+            Octopus.Action.Script.ScriptSource = "Package"
+        }
+        worker_pool = "hosted-ubuntu"
+
+        packages {
+            acquisition_location = "Server"
+            feed = "github-packages"
+            package_id = "Octopub.Frontend"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
+
 step "create-deployment" {
     name = "Create deployment"
     properties = {
@@ -6,6 +37,7 @@ step "create-deployment" {
 
     action {
         action_type = "Octopus.KubernetesDeployRawYaml"
+        is_disabled = true
         properties = {
             Octopus.Action.Kubernetes.DeploymentTimeout = "180"
             Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
@@ -39,6 +71,7 @@ step "create-service" {
 
     action {
         action_type = "Octopus.KubernetesDeployRawYaml"
+        is_disabled = true
         properties = {
             Octopus.Action.Kubernetes.DeploymentTimeout = "180"
             Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
@@ -71,6 +104,7 @@ step "deploy-ingress" {
 
     action {
         action_type = "Octopus.KubernetesDeployRawYaml"
+        is_disabled = true
         properties = {
             Octopus.Action.Kubernetes.DeploymentTimeout = "180"
             Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
