@@ -21,7 +21,7 @@ jobs:
     
     - name: Set Version Number
       id: version-generator
-      run: echo "version=$(date +'%Y.%m.%d').$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
+      run: echo "version=$(date +'%Y.%-m.%-d').$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
   
     - name: Create artifacts folder
       run: |
