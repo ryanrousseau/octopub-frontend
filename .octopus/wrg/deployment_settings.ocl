@@ -1,10 +1,13 @@
 release_notes_template = <<-EOT
-        Here are the notes for the packages
+        This release includes the following changes:
         #{each package in Octopus.Release.Package}
         - #{package.PackageId} #{package.Version}
         #{each commit in package.Commits}
             - [#{commit.CommitId}](#{commit.LinkUrl}) - #{commit.Comment}
         #{/each}
+        #{/each}
+        #{each workItem in Octopus.Release.WorkItems}
+        - [#{workItem.Id}](#{workItem.LinkUrl}) - #{workItem.Description}
         #{/each}
         EOT
 
