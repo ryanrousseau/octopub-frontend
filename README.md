@@ -1,1 +1,3 @@
 # octopub-frontend
+
+Example app
