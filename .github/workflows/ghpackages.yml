@@ -46,6 +46,24 @@ jobs:
       run: |
         dotnet nuget push "$GITHUB_WORKSPACE/artifacts/Octopub.Frontend.${{ steps.version-generator.outputs.version }}.nupkg" --source "https://nuget.pkg.github.com/ryanrousseau/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
 
+  push-build-information:
+    name: Push Build Information to Octopus 🐙
+    needs: package 
+    runs-on: ubuntu-latest
+      
+    env:
+      OCTOPUS_URL: ${{ vars.OCTOPUS_SERVER_URL }}
+      OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
+      OCTOPUS_SPACE: ${{ vars.OCTOPUS_SPACE_NAME }}
+      
+    steps:
+      - uses: OctopusDeploy/push-build-information-action@v3
+        name: Push Build Information
+        with:
+          version: ${{ needs.package.outputs.version }}
+          packages: |
+            Octopub.Frontend
+
   create-release:
     name: Create release 🐙
     needs: [ package ] 
