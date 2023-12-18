@@ -1,3 +1,10 @@
+deployment_changes_template = <<-EOT
+        #{each release in Octopus.Deployment.Changes}
+        **Release #{release.Version}**
+        
+        #{release.ReleaseNotes}
+        #{/each}
+        EOT
 release_notes_template = <<-EOT
         This release includes the following changes:
         
@@ -7,12 +14,13 @@ release_notes_template = <<-EOT
         #{each commit in package.Commits}
             - [#{commit.CommitId}](#{commit.LinkUrl}) - #{commit.Comment}
         #{/each}
+        #{/each}
         
         Work Items:
-        #{each workItem in package.WorkItems}
-            - [#{workItem.Id}](#{workItem.LinkUrl}) - #{workItem.Description}
+        #{each workItem in Octopus.Release.WorkItems}
+        - [#{workItem.Id}](#{workItem.LinkUrl}) - #{workItem.Description}
         #{/each}
-        #{/each}
+        
         EOT
 
 connectivity_policy {
